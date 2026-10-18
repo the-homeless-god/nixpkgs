@@ -1,0 +1,16 @@
+name: flang-package build
+on:
+  push:
+    branches: [flang-package-ci]
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04-arm, macos-14, ubuntu-24.04, macos-13]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - run: nix-build -A flang-package --option sandbox true
+      - run: ./result/bin/flang --version && ./result/bin/flangtutor --list | head -3
